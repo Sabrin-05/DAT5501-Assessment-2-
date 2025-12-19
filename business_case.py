@@ -41,3 +41,13 @@ def clean_co2_data(co2_data):
 co2_data = clean_co2_data(co2_data)
 print(co2_data.head())  # display cleaned data
 
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# figure 1: show the annual CO2 emissions per capita over the years
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+plt.plot(co2_data['Year'], co2_data['Annual CO₂ emissions (per capita)'])
+plt.title('Annual CO2 Emissions per Capita Over Years')
+plt.xlabel('Year')
+plt.ylabel('Annual CO2 Emissions (per capita)')
+plt.show()
