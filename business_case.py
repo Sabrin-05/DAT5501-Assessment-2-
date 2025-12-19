@@ -36,6 +36,11 @@ def clean_co2_data(co2_data):
     # filter for year 2000 onwards
     co2_data = co2_data[co2_data['Year'] >= 2000]
 
+    # top 10 co2 emitting countries
+    highest_emitters = co2_data.groupby('Entity')[
+        'Annual CO₂ emissions (per capita)'].max().nlargest(10).index
+    co2_data = co2_data[co2_data['Entity'].isin(highest_emitters)]
+
     return co2_data
 
 co2_data = clean_co2_data(co2_data)
