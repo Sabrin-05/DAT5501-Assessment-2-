@@ -39,20 +39,35 @@ def clean_co2_data(co2_data):
     # top 10 co2 emitting countries
     highest_emitters = co2_data.groupby('Entity')[
         'Annual CO₂ emissions (per capita)'].max().nlargest(10).index
+    print("Highest Emitters:", highest_emitters) # print highest emitting entities
     co2_data = co2_data[co2_data['Entity'].isin(highest_emitters)]
 
     return co2_data
 
+
 co2_data = clean_co2_data(co2_data)
 print(co2_data.head())  # display cleaned data
+
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # figure 1: show the annual CO2 emissions per capita over the years
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-plt.plot(co2_data['Year'], co2_data['Annual CO₂ emissions (per capita)'])
-plt.title('Annual CO2 Emissions per Capita Over Years')
-plt.xlabel('Year')
-plt.ylabel('Annual CO2 Emissions (per capita)')
+plt.figure(figsize=(10, 6))   
+
+# Loop through top 10 co2 emitting countries and plot their data
+for country in co2_data['Entity'].unique():
+    subset = co2_data[co2_data['Entity'] == country]
+
+    # plot a separate line for each country
+    plt.plot(
+        subset['Year'],
+        subset['Annual CO₂ emissions (per capita)'],
+        label=country
+    )
+
+plt.legend()
 plt.show()
+
+
