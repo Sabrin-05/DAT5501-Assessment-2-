@@ -49,6 +49,29 @@ co2_data = clean_co2_data(co2_data)
 print(co2_data.head())  # display cleaned data
 
 
+def clean_electricity_data(electricity_data):
+    '''
+    Function: cleans dataset by dropping columns, dropping NaN values, and filtering for specific years.
+    
+    Returns: cleaned dataframe
+    '''
+
+    # drop unnecessary columns
+    electricity_data = electricity_data.drop(columns=['Code'])
+
+    # filter for year 2000 onwards
+    electricity_data = electricity_data[electricity_data['Year'] >= 2000]
+
+    '''# top 10 co2 emitting countries
+    highest_emitters = co2_data.groupby('Entity')[
+        'Annual CO₂ emissions (per capita)'].max().nlargest(10).index
+    print("Highest Emitters:", highest_emitters) # print highest emitting entities
+    co2_data = co2_data[co2_data['Entity'].isin(highest_emitters)]
+
+    return co2_data'''
+
+electricity_data = clean_electricity_data(electricity_data)
+print(electricity_data.head())  # display cleaned data
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # figure 1: show the annual CO2 emissions per capita over the years
