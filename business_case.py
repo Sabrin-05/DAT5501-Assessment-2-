@@ -74,7 +74,7 @@ electricity_data = clean_electricity_data(electricity_data)
 print(electricity_data.head())  # display cleaned data
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# figure 1: show the annual CO2 emissions per capita over the years
+# figure 1: Line plot, show the annual CO2 emissions per capita over the years
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 plt.figure(figsize=(10, 6))   
