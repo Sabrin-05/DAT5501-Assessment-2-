@@ -11,11 +11,11 @@ from sklearn.tree import DecisionTreeClassifier, plot_tree
 # load data and read csv
 #~~~~~~~~~~~~~~~~~~~~~~~~
 
-#
+# read co2 csv dataset
 co2_data = pd.read_csv('datasets/co2-emissions-per-capita.csv')
 print(co2_data.head())  # display first few rows of the dataset
 
-#
+# read electricity csv dataset
 electricity_data = pd.read_csv('datasets/electricity-fossil-renewables-nuclear-line.csv')
 print(electricity_data.head())  # display first few rows of the dataset
 
