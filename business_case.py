@@ -3,9 +3,8 @@
 import pandas as pd 
 import matplotlib.pyplot as plt 
 import numpy as np 
-from sklearn import tree 
-from sklearn.model_selection import train_test_split
-from sklearn.tree import DecisionTreeClassifier, plot_tree
+from sklearn.preprocessing import StandardScaler
+from sklearn.cluster import KMeans
 
 #~~~~~~~~~~~~~~~~~~~~~~~~
 # load data and read csv
@@ -94,3 +93,53 @@ plt.legend()
 plt.show()
 
 
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# figure 2: K-Means Clustering
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+def merge_datasets(co2_data, electricity_data, year='2022'):
+    '''
+    Function: Merges the emissions dataset witht the eclecricity dataset 
+    To create one clean table with all necessary features for clustering 
+
+    Parameters:
+    -----------
+    co2_df : pd.DataFrame
+    CO2 emissions per capita (OWID)
+    electricity_df : pd.DataFrame
+    Electricity energy (OWID)
+    year : int 
+    Year to filter both datasets on 
+
+    Returns:
+    --------
+    Merged dataset with desired features and no missing values
+    '''
+
+    # clean co2 emissions data
+    co2_cleaned = (
+        co2_data[co2_data["Year"] == year] 
+        .rename(columns={ "Entity": "country",
+                          "Annual CO₂ emissions (per capita)": "co2_per_capita" 
+        }) 
+        [["country", "co2_per_capita"]] .dropna() )
+    
+     # clean electricity mix data
+    electricity_cleaned = ( 
+        electricity_data[electricity_data["Year"] == year]
+        .rename(columns={ "Entity": "country",
+                          "Fossil fuels - % electricity": "fossil_share",
+                          "Renewables - % electricity": "renewable_share",
+                          "Nuclear - % electricity": "nuclear_share" 
+        }) 
+        [["country", "fossil_share", "renewable_share", "nuclear_share"]] .dropna() )
+    
+     # merge two datasets
+    
+    merged = co2_cleaned.merge(electricity_cleaned, on="country", how="inner") 
+    
+    return merged
+    
+print(merge_datasets)
+
+#scaler = StandardScaler()
