@@ -61,13 +61,8 @@ def clean_electricity_data(electricity_data):
     # filter for year 2000 onwards
     electricity_data = electricity_data[electricity_data['Year'] >= 2000]
 
-    '''# top 10 co2 emitting countries
-    highest_emitters = co2_data.groupby('Entity')[
-        'Annual CO₂ emissions (per capita)'].max().nlargest(10).index
-    print("Highest Emitters:", highest_emitters) # print highest emitting entities
-    co2_data = co2_data[co2_data['Entity'].isin(highest_emitters)]
 
-    return co2_data'''
+    return electricity_data
 
 electricity_data = clean_electricity_data(electricity_data)
 print(electricity_data.head())  # display cleaned data
@@ -142,4 +137,28 @@ def merge_datasets(co2_data, electricity_data, year='2022'):
     
 print(merge_datasets)
 
-#scaler = StandardScaler()
+scaler = StandardScaler()
+
+def optimise_k_means(data, max_k):
+    '''
+    Function: Works ou tthe optimum number of clusters 
+    '''
+    means = []
+    inertias =[]
+
+    for k in range(1, max_k):
+        kmeans = KMeans(n_clusters=k)
+        kmeans.fit(data)
+
+        means.append(k)
+        inertias.append(kmeans.inertia_)
+    
+    # generate the elbow plot 
+    fig =plt.subplots(figsize=(10,5))
+    plt.plot(means, inertias, '....')
+    plt.xlabel('Number of Clusters')
+    plt.ylabel('Inertia')
+    plt.grid(True)
+    plt.show()
+
+    
