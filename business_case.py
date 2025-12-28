@@ -97,7 +97,7 @@ plt.show()
 # figure 2: K-Means Clustering
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-def merge_datasets(co2_data, electricity_data, year='2017'):
+def merge_datasets(co2_data, electricity_data, year='2022'):
     '''
     Function: Merges the emissions dataset witht the eclecricity dataset 
     To create one clean table with all necessary features for clustering 
@@ -166,7 +166,7 @@ def merge_datasets(co2_data, electricity_data, year='2017'):
     return merged
 
 
-merged_df = merge_datasets(co2_data, electricity_data, year='2017')    
+merged_df = merge_datasets(co2_data, electricity_data, year='2022')    
 print(merged_df)
    
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -190,11 +190,13 @@ for year in sorted(set(co2_data["Year"]).intersection(electricity_data["Year"]))
 # Print the top years
 sorted(overlap.items(), key=lambda x: x[1], reverse=True)[:10]
 
+# select desired year to merge data
 co2_2022 = co2_data[co2_data["Year"] == 2022]
 electricity_2022= electricity_data[electricity_data["Year"] == 2022]
 
-print(co2_2022.shape)
-print(electricity_2022.shape)
+# merge datasets on entities
+joined_datasets = co2_2022.merge(electricity_2022, on="Entity", how="inner")
+print(joined_datasets.head())
 
 scaler = StandardScaler()
 
