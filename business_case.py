@@ -93,9 +93,9 @@ plt.legend()
 plt.show()
 
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# figure 2: K-Means Clustering
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Merging the datasets for K-Means Clustering plot
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 def merge_datasets(co2_data, electricity_data, year='2022'):
     '''
@@ -198,11 +198,18 @@ electricity_2022= electricity_data[electricity_data["Year"] == 2022]
 joined_datasets = co2_2022.merge(electricity_2022, on="Entity", how="inner")
 print(joined_datasets.head())
 
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Transforming and Standerdising the data
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 scaler = StandardScaler()
 
 def optimise_k_means(data, max_k):
     '''
     Function: Works out the optimum number of clusters 
+
+    Parameters:
+    -----------
+
     '''
     means = []
     inertias =[]
