@@ -226,10 +226,16 @@ def rename_coloumns(joined_datasets):
     
     return data 
 
+# call the newly named dataframe
 data = rename_coloumns(joined_datasets)    
 print(data)
 
-joined_datasets[[]]
+# normalise the features ie each coloumn
+data[['fossil_share_T','renewable_share_T',
+      'nuclear_share_T','co2_per_capita_T']] = scaler.fit_transform(data[['fossil_share','renewable_share',
+      'nuclear_share','co2_per_capita']])
+
+print(data)
 
 def optimise_k_means(data, max_k):
     '''
@@ -237,7 +243,7 @@ def optimise_k_means(data, max_k):
 
     Parameters:
     -----------
-
+    
     '''
     means = []
     inertias =[]
