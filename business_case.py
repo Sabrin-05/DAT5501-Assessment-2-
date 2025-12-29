@@ -243,8 +243,16 @@ def optimise_k_means(data, max_k):
 
     Parameters:
     -----------
-    
+    Data: 
+    co2 emissions dataset 
+    electricity mix dataset 
+
+    Max_k:
+    Maximum number of clusters that the algorithm will consider 
+
+    Return:
     '''
+
     means = []
     inertias =[]
 
@@ -257,10 +265,12 @@ def optimise_k_means(data, max_k):
     
     # generate the elbow plot 
     fig =plt.subplots(figsize=(10,5))
-    plt.plot(means, inertias, '....')
+    plt.plot(means, inertias, 'o-')
     plt.xlabel('Number of Clusters')
     plt.ylabel('Inertia')
     plt.grid(True)
     plt.show()
 
     
+optimise_k_means(data[['fossil_share_T','renewable_share_T',
+                       'nuclear_share_T','co2_per_capita_T']],10)
