@@ -203,6 +203,34 @@ print(joined_datasets.head())
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 scaler = StandardScaler()
 
+def rename_coloumns(joined_datasets):
+    '''
+    Function: Renames the coloumns in the merged dataset for easier calling 
+    
+    Parameters:
+    -----------
+    Joined_datasets: 
+    Containing co2 emissions dataset and electricity dataset merged
+
+    Return:
+    Newly named coloumns in dataframe
+    '''
+
+    data = joined_datasets.rename(columns={
+            "Entity": "country",
+            "Fossil fuels - % electricity": "fossil_share",
+            "Renewables - % electricity": "renewable_share",
+            "Nuclear - % electricity": "nuclear_share",
+            "Annual CO₂ emissions (per capita)": "co2_per_capita"
+            })
+    
+    return data 
+
+data = rename_coloumns(joined_datasets)    
+print(data)
+
+joined_datasets[[]]
+
 def optimise_k_means(data, max_k):
     '''
     Function: Works out the optimum number of clusters 
