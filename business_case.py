@@ -272,5 +272,24 @@ def optimise_k_means(data, max_k):
     plt.show()
 
     
-optimise_k_means(data[['fossil_share_T','renewable_share_T',
-                       'nuclear_share_T','co2_per_capita_T']],10)
+optimise_k_means(data[['renewable_share_T',
+                       'co2_per_capita_T']],10)
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Figure 2: K-Means Cluster Plot
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+kmeans = KMeans(n_clusters=3)
+kmeans.fit(data[['renewable_share_T',
+                 'co2_per_capita_T']])
+
+data['kmeans_3'] = kmeans.labels_
+print(data)
+
+# plotting the results
+
+plt.scatter(x=data['renewable_share'], y=data['co2_per_capita'], c=data['kmeans_3'])
+plt.xlim(-0.1,1)
+plt.ylim(3,1.5)
+plt.show()
