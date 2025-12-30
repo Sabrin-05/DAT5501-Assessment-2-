@@ -300,18 +300,52 @@ plt.show()
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
 
 #Filter on 2019 for both datasets
-
 co2_2019 = co2_data[co2_data['Year'] == 2019]
 elec_2019 = electricity_data[electricity_data['Year'] == 2019]
 
 merged_2019 = co2_2019.merge(elec_2019, on=["Entity", "Year"], how="inner")
 
-plt.scatter(merged_2019['Fossil fuels - % electricity'],
-            merged_2019['Annual CO₂ emissions (per capita)']
-            )
+
+# find the outlier within the graphs
+merged_2019['co2_z'] = (merged_2019['Annual CO₂ emissions (per capita)'] - 
+                        merged_2019['Annual CO₂ emissions (per capita)'].mean())/ merged_2019['Annual CO₂ emissions (per capita)'].std()
+
+outliers = merged_2019[merged_2019['co2_z'] > 2]   # countries more than 2 SD above mean
+print(outliers[['Entity', 'Fossil fuels - % electricity', 'Annual CO₂ emissions (per capita)']])
+
+
+# create and display the graph
+plt.figure(figsize=(10,6))
+
+# normal points
+plt.scatter(
+    merged_2019['Fossil fuels - % electricity'],
+    merged_2019['Annual CO₂ emissions (per capita)'],
+    color='blue',
+    s=40,
+    label='Other countries'
+)
+
+# anomalies
+plt.scatter(
+    outliers['Fossil fuels - % electricity'],
+    outliers['Annual CO₂ emissions (per capita)'],
+    color='red',
+    s=80,
+    label='High-emission anomalies'
+)
+
+
 plt.xlabel('Fossile Fuel Share (%)')
 plt.ylabel('CO2 Emissions Per Capita (tonnes)')
 plt.title('CO₂ per capita vs Fossil Fuel Share')
 plt.show()
 
-
+# print out the outlier countries
+for _, row in outliers.iterrows():
+    plt.text(
+        row['Fossil fuels - % electricity'] + 0.5,
+        row['Annual CO₂ emissions (per capita)'] + 0.2,
+        row['Entity'],
+        fontsize=9
+    )
