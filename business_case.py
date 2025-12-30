@@ -293,3 +293,25 @@ plt.scatter(x=data['renewable_share'], y=data['co2_per_capita'], c=data['kmeans_
 plt.xlim(-0.1,1)
 plt.ylim(3,1.5)
 plt.show()
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Figure 3: Scatter plot with regression line 
+# Showing CO2 Emissions vs Fossil Fuel Share
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
+
+#Filter on 2019 for both datasets
+
+co2_2019 = co2_data[co2_data['Year'] == 2019]
+elec_2019 = electricity_data[electricity_data['Year'] == 2019]
+
+merged_2019 = co2_2019.merge(elec_2019, on=["Entity", "Year"], how="inner")
+
+plt.scatter(merged_2019['Fossil fuels - % electricity'],
+            merged_2019['Annual CO₂ emissions (per capita)']
+            )
+plt.xlabel('Fossile Fuel Share (%)')
+plt.ylabel('CO2 Emissions Per Capita (tonnes)')
+plt.title('CO₂ per capita vs Fossil Fuel Share')
+plt.show()
+
+
