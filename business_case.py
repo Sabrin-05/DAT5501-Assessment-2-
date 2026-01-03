@@ -1,4 +1,6 @@
-# import necessary libraries
+#~~~~~~~~~~~~~~~~~~
+# IMPORT LIBRARIES
+#~~~~~~~~~~~~~~~~~~
 
 import pandas as pd 
 import matplotlib.pyplot as plt 
@@ -6,28 +8,14 @@ import numpy as np
 from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans
 
-#~~~~~~~~~~~~~~~~~~~~~~~~
-# load data and read csv
-#~~~~~~~~~~~~~~~~~~~~~~~~
-
-# read co2 csv dataset
-co2_data = pd.read_csv('datasets/co2-emissions-per-capita.csv')
-print(co2_data.head())  # display first few rows of the dataset
-print(type(co2_data))
-
-# read electricity csv dataset
-electricity_data = pd.read_csv('datasets/electricity-fossil-renewables-nuclear-line.csv')
-print(electricity_data.head())  # display first few rows of the dataset
-print(type(electricity_data))
-
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# data wrangling and cleaning
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#~~~~~~~~~~~~~~~~~~~~~
+# FUNCTION DEFINITIONS
+#~~~~~~~~~~~~~~~~~~~~~
 
 def clean_co2_data(co2_data):
     '''
-    Function: cleans dataset by dropping columns, dropping NaN values, and filtering for specific years.
+    Function: cleans dataset by dropping columns, dropping NaN values,
+    and filtering for specific years.
     
     Returns: cleaned dataframe
     '''
@@ -42,13 +30,10 @@ def clean_co2_data(co2_data):
     return co2_data
 
 
-co2_data = clean_co2_data(co2_data)
-print(co2_data.head())  # display cleaned data
-
-
 def clean_electricity_data(electricity_data):
     '''
-    Function: cleans dataset by dropping columns, dropping NaN values, and filtering for specific years.
+    Function: cleans dataset by dropping columns, dropping NaN values,
+    and filtering for specific years.
     
     Returns: cleaned dataframe
     '''
@@ -62,40 +47,6 @@ def clean_electricity_data(electricity_data):
 
     return electricity_data
 
-electricity_data = clean_electricity_data(electricity_data)
-print(electricity_data.head())  # display cleaned data
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# figure 1: Line plot, show the annual CO2 emissions per capita over the years
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-plt.figure(figsize=(10, 6))   
-
-# top 10 co2 emitting countries
-highest_emitters = co2_data.groupby('Entity')[
-        'Annual CO₂ emissions (per capita)'].max().nlargest(10).index
-print("Highest Emitters:", highest_emitters) # print highest emitting entities
-co2_highest_emitters = co2_data[co2_data['Entity'].isin(highest_emitters)]
-
-
-# Loop through top 10 co2 emitting countries and plot their data
-for country in co2_highest_emitters['Entity'].unique():
-    subset = co2_highest_emitters[co2_highest_emitters['Entity'] == country]
-
-    # plot a separate line for each country
-    plt.plot(
-        subset['Year'],
-        subset['Annual CO₂ emissions (per capita)'],
-        label=country
-    )
-
-plt.legend()
-plt.show()
-
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Merging the datasets for K-Means Clustering plot
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 def merge_datasets(co2_data, electricity_data, year='2022'):
     '''
@@ -166,43 +117,6 @@ def merge_datasets(co2_data, electricity_data, year='2022'):
     return merged
 
 
-merged_df = merge_datasets(co2_data, electricity_data, year='2022')    
-print(merged_df)
-   
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Manually merging datasets togther as function doesnt work
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-# AI assisst help create a loop to find countries from lines 175-189
-co2_counts = co2_data.groupby("Year")["Entity"].nunique()
-elec_counts = electricity_data.groupby("Year")["Entity"].nunique()
-
-print(co2_counts.tail(20))
-print(elec_counts.tail(20))
-
-overlap = {}
-
-for year in sorted(set(co2_data["Year"]).intersection(electricity_data["Year"])):
-    co2_countries = set(co2_data[co2_data["Year"] == year]["Entity"])
-    elec_countries = set(electricity_data[electricity_data["Year"] == year]["Entity"])
-    overlap[year] = len(co2_countries.intersection(elec_countries))
-
-# Print the top years
-sorted(overlap.items(), key=lambda x: x[1], reverse=True)[:10]
-
-# select desired year to merge data
-co2_2022 = co2_data[co2_data["Year"] == 2022]
-electricity_2022= electricity_data[electricity_data["Year"] == 2022]
-
-# merge datasets on entities
-joined_datasets = co2_2022.merge(electricity_2022, on="Entity", how="inner")
-print(joined_datasets.head())
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Transforming and Standerdising the data
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-scaler = StandardScaler()
-
 def rename_coloumns(joined_datasets):
     '''
     Function: Renames the coloumns in the merged dataset for easier calling 
@@ -226,16 +140,6 @@ def rename_coloumns(joined_datasets):
     
     return data 
 
-# call the newly named dataframe
-data = rename_coloumns(joined_datasets)    
-print(data)
-
-# normalise the features ie each coloumn
-data[['fossil_share_T','renewable_share_T',
-      'nuclear_share_T','co2_per_capita_T']] = scaler.fit_transform(data[['fossil_share','renewable_share',
-      'nuclear_share','co2_per_capita']])
-
-print(data)
 
 def optimise_k_means(data, max_k):
     '''
@@ -271,81 +175,204 @@ def optimise_k_means(data, max_k):
     plt.grid(True)
     plt.show()
 
+#------------------------
+# MAIN EXECUTION BLOCK
+#------------------------
+
+def main():
+    #~~~~~~~~~~~~~~~~~~~~~~~~
+    # load data and read csv
+    #~~~~~~~~~~~~~~~~~~~~~~~~
+
+    # read co2 csv dataset
+    co2_data = pd.read_csv('datasets/co2-emissions-per-capita.csv')
+    print(co2_data.head())  # display first few rows of the dataset
+    print(type(co2_data))
+
+    # read electricity csv dataset
+    electricity_data = pd.read_csv('datasets/electricity-fossil-renewables-nuclear-line.csv')
+    print(electricity_data.head())  # display first few rows of the dataset
+    print(type(electricity_data))
+
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # data wrangling and cleaning
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    co2_data = clean_co2_data(co2_data)
+    print(co2_data.head())  # display cleaned data
+
+
+    electricity_data = clean_electricity_data(electricity_data)
+    print(electricity_data.head())  # display cleaned data
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # figure 1: Line plot, show the annual CO2 emissions per capita over the years
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    plt.figure(figsize=(10, 6))   
+
+    # top 10 co2 emitting countries
+    highest_emitters = co2_data.groupby('Entity')[
+            'Annual CO₂ emissions (per capita)'].max().nlargest(10).index
+    print("Highest Emitters:", highest_emitters) # print highest emitting entities
+    co2_highest_emitters = co2_data[co2_data['Entity'].isin(highest_emitters)]
+
+
+    # Loop through top 10 co2 emitting countries and plot their data
+    for country in co2_highest_emitters['Entity'].unique():
+        subset = co2_highest_emitters[co2_highest_emitters['Entity'] == country]
+
+        # plot a separate line for each country
+        plt.plot(
+            subset['Year'],
+            subset['Annual CO₂ emissions (per capita)'],
+            label=country
+        )
+
+    plt.legend()
+    plt.show()
+
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # Merging the datasets for K-Means Clustering plot
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+
+    merged_df = merge_datasets(co2_data, electricity_data, year='2022')    
+    print(merged_df)
     
-optimise_k_means(data[['renewable_share_T',
-                       'co2_per_capita_T']],10)
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # Manually merging datasets togther as function doesnt work
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    # AI assisst help create a loop to find countries from lines 175-189
+    co2_counts = co2_data.groupby("Year")["Entity"].nunique()
+    elec_counts = electricity_data.groupby("Year")["Entity"].nunique()
+
+    print(co2_counts.tail(20))
+    print(elec_counts.tail(20))
+
+    overlap = {}
+
+    for year in sorted(set(co2_data["Year"]).intersection(electricity_data["Year"])):
+        co2_countries = set(co2_data[co2_data["Year"] == year]["Entity"])
+        elec_countries = set(electricity_data[electricity_data["Year"] == year]["Entity"])
+        overlap[year] = len(co2_countries.intersection(elec_countries))
+
+    # Print the top years
+    sorted(overlap.items(), key=lambda x: x[1], reverse=True)[:10]
+
+    # select desired year to merge data
+    co2_2022 = co2_data[co2_data["Year"] == 2022]
+    electricity_2022= electricity_data[electricity_data["Year"] == 2022]
+
+    # merge datasets on entities
+    joined_datasets = co2_2022.merge(electricity_2022, on="Entity", how="inner")
+    print(joined_datasets.head())
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # Transforming and Standerdising the data
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    scaler = StandardScaler()
 
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Figure 2: K-Means Cluster Plot
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # call the newly named dataframe
+    data = rename_coloumns(joined_datasets)    
+    print(data)
 
-kmeans = KMeans(n_clusters=3)
-kmeans.fit(data[['renewable_share_T',
-                 'co2_per_capita_T']])
+    # normalise the features ie each coloumn
+    data[['fossil_share_T','renewable_share_T',
+        'nuclear_share_T','co2_per_capita_T']] = scaler.fit_transform(data[['fossil_share','renewable_share',
+        'nuclear_share','co2_per_capita']])
 
-data['kmeans_3'] = kmeans.labels_
-print(data)
-
-# plotting the results
-
-plt.scatter(x=data['renewable_share'], y=data['co2_per_capita'], c=data['kmeans_3'])
-plt.xlim(-0.1,1)
-plt.ylim(3,1.5)
-plt.show()
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Figure 3: Scatter plot with regression line 
-# Showing CO2 Emissions vs Fossil Fuel Share
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
-
-#Filter on 2019 for both datasets
-co2_2019 = co2_data[co2_data['Year'] == 2019]
-elec_2019 = electricity_data[electricity_data['Year'] == 2019]
-
-merged_2019 = co2_2019.merge(elec_2019, on=["Entity", "Year"], how="inner")
+    print(data)
 
 
-# find the outlier within the graphs
-merged_2019['co2_z'] = (merged_2019['Annual CO₂ emissions (per capita)'] - 
-                        merged_2019['Annual CO₂ emissions (per capita)'].mean())/ merged_2019['Annual CO₂ emissions (per capita)'].std()
-
-outliers = merged_2019[merged_2019['co2_z'] > 2]   # countries more than 2 SD above mean
-print(outliers[['Entity', 'Fossil fuels - % electricity', 'Annual CO₂ emissions (per capita)']])
+        
+    optimise_k_means(data[['renewable_share_T',
+                        'co2_per_capita_T']],10)
 
 
-# create and display the graph
-plt.figure(figsize=(10,6))
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # Figure 2: K-Means Cluster Plot
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-# normal points
-plt.scatter(
-    merged_2019['Fossil fuels - % electricity'],
-    merged_2019['Annual CO₂ emissions (per capita)'],
-    color='blue',
-    s=40,
-    label='Other countries'
-)
+    kmeans = KMeans(n_clusters=3)
+    kmeans.fit(data[['renewable_share_T',
+                    'co2_per_capita_T']])
 
-# anomalies
-plt.scatter(
-    outliers['Fossil fuels - % electricity'],
-    outliers['Annual CO₂ emissions (per capita)'],
-    color='red',
-    s=80,
-    label='High-emission anomalies'
-)
+    data['kmeans_3'] = kmeans.labels_
+    print(data)
+
+    # plotting the results
+
+    plt.scatter(x=data['renewable_share'], y=data['co2_per_capita'], c=data['kmeans_3'])
+    plt.xlim(-0.1,1)
+    plt.ylim(3,1.5)
+    plt.show()
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # Figure 3: Scatter plot with regression line 
+    # Showing CO2 Emissions vs Fossil Fuel Share
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
+
+    #Filter on 2019 for both datasets
+    co2_2019 = co2_data[co2_data['Year'] == 2019]
+    elec_2019 = electricity_data[electricity_data['Year'] == 2019]
+
+    merged_2019 = co2_2019.merge(elec_2019, on=["Entity", "Year"], how="inner")
 
 
-plt.xlabel('Fossile Fuel Share (%)')
-plt.ylabel('CO2 Emissions Per Capita (tonnes)')
-plt.title('CO₂ per capita vs Fossil Fuel Share')
-plt.show()
+    # find the outlier within the graphs
+    merged_2019['co2_z'] = (merged_2019['Annual CO₂ emissions (per capita)'] - 
+                            merged_2019['Annual CO₂ emissions (per capita)'].mean())/ merged_2019['Annual CO₂ emissions (per capita)'].std()
 
-# print out the outlier countries
-for _, row in outliers.iterrows():
-    plt.text(
-        row['Fossil fuels - % electricity'] + 0.5,
-        row['Annual CO₂ emissions (per capita)'] + 0.2,
-        row['Entity'],
-        fontsize=9
+    outliers = merged_2019[merged_2019['co2_z'] > 2]   # countries more than 2 SD above mean
+    print(outliers[['Entity', 'Fossil fuels - % electricity', 'Annual CO₂ emissions (per capita)']])
+
+
+    # create and display the graph
+    plt.figure(figsize=(10,6))
+
+    # normal points
+    plt.scatter(
+        merged_2019['Fossil fuels - % electricity'],
+        merged_2019['Annual CO₂ emissions (per capita)'],
+        color='blue',
+        s=40,
+        label='Other countries'
     )
+
+    # anomalies
+    plt.scatter(
+        outliers['Fossil fuels - % electricity'],
+        outliers['Annual CO₂ emissions (per capita)'],
+        color='red',
+        s=80,
+        label='High-emission anomalies'
+    )
+
+
+    plt.xlabel('Fossile Fuel Share (%)')
+    plt.ylabel('CO2 Emissions Per Capita (tonnes)')
+    plt.title('CO₂ per capita vs Fossil Fuel Share')
+    plt.show()
+
+    # print out the outlier countries
+    for _, row in outliers.iterrows():
+        plt.text(
+            row['Fossil fuels - % electricity'] + 0.5,
+            row['Annual CO₂ emissions (per capita)'] + 0.2,
+            row['Entity'],
+            fontsize=9
+        )
+
+#----------------------------
+# RUN MAIN ONLY WHEN EXECUTED 
+#----------------------------
+
+if __name__ == '__main__':
+    main()
