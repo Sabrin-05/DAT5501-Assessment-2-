@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np 
 from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans
+import plotly.express as px
 
 #~~~~~~~~~~~~~~~~~~~~~
 # FUNCTION DEFINITIONS
@@ -248,7 +249,7 @@ def main():
     # Manually merging datasets togther as function doesnt work
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    # AI assisst help create a loop to find countries from lines 175-189
+    # group both datasets by year and entity
     co2_counts = co2_data.groupby("Year")["Entity"].nunique()
     elec_counts = electricity_data.groupby("Year")["Entity"].nunique()
 
@@ -369,6 +370,34 @@ def main():
             row['Entity'],
             fontsize=9
         )
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # Figure 4: Chloropleth Map showing CO2 emissions in 2022
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    # read original co2 data
+    df = pd.read_csv('datasets/co2-emissions-per-capita.csv')
+
+    # filter co2 dataset for year 2022
+    co2_2022 = df[df['Year'] == 2022]
+
+    # rename 'Code' column as plotly expects 'Iso_code'
+    co2_2022 = co2_2022.rename(columns={"Code": "iso_code"})
+
+    # plot the chloropleth map 
+    fig = px.choropleth(
+        co2_2022,
+        locations="iso_code",                     # ISO country codes
+        color="Annual CO₂ emissions (per capita)",# Value to shade
+        hover_name="Entity",                      # Hover label
+        color_continuous_scale="Reds",            # Colour scheme
+        title="CO₂ Emissions Per Capita (2022)"
+    )
+
+    fig.show()
+
+    
+
 
 #----------------------------
 # RUN MAIN ONLY WHEN EXECUTED 

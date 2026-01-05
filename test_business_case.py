@@ -4,7 +4,9 @@ import unittest
 import numpy as np
 from business_case import clean_co2_data
 from business_case import clean_electricity_data
+from business_case import merge_datasets
 from business_case import rename_coloumns
+from business_case import optimise_k_means
 import pandas as pd
 from unittest.mock import patch
 
@@ -80,6 +82,32 @@ class TestCleanCO2Data(unittest.TestCase):
         self.assertNotIn('Nuclear - % electricity', renamed.columns)
         self.assertNotIn('Annual CO₂ emissions (per capita)', renamed.columns)
     
+
+    @patch("business_case.plt.show")   # prevents plot window from opening
+    @patch("business_case.KMeans.fit")
+
+    def test_opimise_k_means(self):
+        '''
+        Function: Checks weather optimise_k_means functions is 
+        correctly calculating the optimal number of clusters
+        '''
+        
+        
+        # Create a simple numeric dataframe
+        df = pd.DataFrame({
+            "feature1": [1, 2, 3, 4, 5],
+            "feature2": [2, 3, 4, 5, 6]
+        })
+
+        # Run the function
+        optimise_k_means(df, max_k=5)
+
+        # Check that KMeans.fit was called 4 times (k = 1 to 4)
+        self.assertEqual(mock_fit.call_count, 4)
+
+        # Check that plt.show() was called once
+        mock_show.assert_called_once()
+
 if __name__ == "__main__":
     unittest.main()
 
