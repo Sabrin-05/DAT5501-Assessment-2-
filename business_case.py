@@ -195,6 +195,11 @@ def main():
     print(electricity_data.head())  # display first few rows of the dataset
     print(type(electricity_data))
 
+    #read income csv dataset
+    income_data = pd.read_csv('datasets/world-bank-income-groups.csv')
+    print(income_data.head())  # display first few rows of the dataset
+    print(type(income_data))
+
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # data wrangling and cleaning
@@ -322,8 +327,23 @@ def main():
     co2_2019 = co2_data[co2_data['Year'] == 2019]
     elec_2019 = electricity_data[electricity_data['Year'] == 2019]
 
+    # merge both variables into one dataframe
     merged_2019 = co2_2019.merge(elec_2019, on=["Entity", "Year"], how="inner")
 
+    # add income group dataset
+    merged_2019 = merged_2019.merge(
+        income_data[["Entity", "World Bank's income classification"]],
+        on = 'Entity',
+        how = 'left'
+    )
+
+    # colour code countries by income group
+    income_colours = {
+        'Low-income countries': '#1f77b4',
+        'Lower-middle-income countries': '#2ca02c',
+        'Upper-middle-income countries': '#ff7f0e',
+        'High income countries': '#9467bd'
+    }
 
     # find the outlier within the graphs
     merged_2019['co2_z'] = (merged_2019['Annual CO₂ emissions (per capita)'] - 
@@ -336,14 +356,22 @@ def main():
     # create and display the graph
     plt.figure(figsize=(10,6))
 
-    # normal points
-    plt.scatter(
-        merged_2019['Fossil fuels - % electricity'],
-        merged_2019['Annual CO₂ emissions (per capita)'],
-        color='blue',
-        s=40,
-        label='Other countries'
-    )
+    for income_group, colour in income_colours.items():
+        subset = merged_2019[
+            (merged_2019["World Bank's income classification"] == income_group) &
+            (merged_2019["co2_z"])
+        ]
+
+
+        plt.scatter(
+            subset['Fossil fuels - % electricity'],
+            subset['Annual CO₂ emissions (per capita)'],
+            color = colour,
+            s=40,
+            alpha = 0.7,
+            label = income_group
+        )
+
 
     # anomalies
     plt.scatter(
@@ -355,35 +383,6 @@ def main():
     )
 
 
-    '''
-    # Define x and y
-    x = merged_2019['Fossil fuels - % electricity']
-    y = merged_2019['Annual CO₂ emissions (per capita)']
-
-    # Remove any zero or negative y-values (log cannot handle them)
-    mask = y > 0
-    x = x[mask]
-    y = y[mask]
-
-    # Fit exponential model: log(y) = m*x + c
-    log_y = np.log(y)
-    m, c = np.polyfit(x, log_y, 1)
-
-    # Convert back to exponential form
-    y_pred = np.exp(m * x + c)
-
-    # Plot exponential curve
-    x_sorted = np.sort(x)
-    plt.plot(x_sorted, np.exp(m * x_sorted + c),
-            color='black', linewidth=2, label='Exponential trend')
-    
-    plt.text(
-    min(x)+5,
-    max(y)*0.9,
-    f"y = exp({m:.3f}x + {c:.3f})",
-    fontsize=10
-    )'''
-
     # print out the outlier countries
     for _, row in outliers.iterrows():
         plt.text(
@@ -393,10 +392,12 @@ def main():
             fontsize=9
         )
 
-    plt.xlabel('Fossile Fuel Share (%)')
+    plt.xlabel('Fossil Fuel Share (%)')
     plt.ylabel('CO2 Emissions Per Capita (tonnes)')
-    plt.title('CO₂ per capita vs Fossil Fuel Share')
-    plt.legend()
+    plt.title('CO₂ per capita vs Fossil Fuel Share by Income Group (2019)')
+    plt.legend(title='Income Group')
+    plt.grid(True, alpha=0.3)
+    plt.tight_layout()
     plt.savefig("my_scatter_plot.png", dpi=300, bbox_inches='tight')
     plt.show()
 
