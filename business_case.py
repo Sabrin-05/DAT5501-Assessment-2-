@@ -49,7 +49,7 @@ def clean_electricity_data(electricity_data):
     return electricity_data
 
 
-def merge_datasets(co2_data, electricity_data, year='2022'):
+def merge_datasets(co2_data, electricity_data):
     '''
     Function: Merges the emissions dataset witht the eclecricity dataset 
     To create one clean table with all necessary features for clustering 
@@ -69,51 +69,14 @@ def merge_datasets(co2_data, electricity_data, year='2022'):
     '''
 
 
-    # clean co2 emissions data
-    co2_cleaned = (
-        co2_data[co2_data["Year"] == year]
-        .rename(columns={
-            "Entity": "country",
-            "Annual CO₂ emissions (per capita)": "co2_per_capita"
-        })
-        [["country", "co2_per_capita"]]
-        .dropna()
-    )
+    # filtered co2 emissions data
+    filtered_co2 = co2_data[co2_data['Year']== 2022]
 
-    # clean electricity mix data
-    electricity_cleaned = (
-        electricity_data[electricity_data["Year"] == year]
-        .rename(columns={
-            "Entity": "country",
-            "Fossil fuels - % electricity": "fossil_share",
-            "Renewables - % electricity": "renewable_share",
-            "Nuclear - % electricity": "nuclear_share"
-        })
-        [["country", "fossil_share", "renewable_share", "nuclear_share"]]
-        .dropna()
-    )
-
-    # debugging by checking number of rows and columns
-    print("CO2 cleaned shape:", co2_cleaned.shape)
-    print("Electricity cleaned shape:", electricity_cleaned.shape)
-    
-    # debugging by checking which year is in both datasets
-    print(sorted(co2_data["Year"].unique()))
-    print(sorted(electricity_data["Year"].unique()))
-
-    # debugging by checking new column names exist
-    print(co2_data.columns)
-    print(electricity_data.columns)
-    
-    temp = co2_data[co2_data["Year"] == year].rename(columns={
-    "Entity": "country",
-    "Annual CO₂ emissions (per capita)": "co2_per_capita"
-    })
-    print(temp.head())
-
+    # filtered energy mix data
+    filtered_elec = electricity_data[electricity_data['Year'] == 2022]
 
     # merge two datasets
-    merged = co2_cleaned.merge(electricity_cleaned, on="country", how="inner")
+    merged = filtered_co2.merge(filtered_elec, on="Enitity", how="inner")
 
     return merged
 
@@ -237,6 +200,7 @@ def main():
         )
 
     plt.legend()
+    plt.savefig("SupplementaryFig2.png", dpi=300, bbox_inches='tight')
     plt.show()
 
 
@@ -245,8 +209,8 @@ def main():
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-    merged_df = merge_datasets(co2_data, electricity_data, year='2022')    
-    print(merged_df)
+    '''merged_df = merge_datasets(co2_data, electricity_data)    
+    print(merged_df)'''
     
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # Manually merging datasets togther as function doesnt work
@@ -398,7 +362,7 @@ def main():
     plt.legend(title='Income Group')
     plt.grid(True, alpha=0.3)
     plt.tight_layout()
-    plt.savefig("my_scatter_plot.png", dpi=300, bbox_inches='tight')
+    plt.savefig("KeyFigure1.png", dpi=300, bbox_inches='tight')
     plt.show()
 
 
@@ -428,6 +392,27 @@ def main():
     )
 
     fig.show()'''
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # Figure 5: Electricity Share composition by Income
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    x = merged_2019['Low income countries','Lower-middle-income countries',
+         'Upper-middle-income countries','High income countries']
+    y1= merged_2019['Nuclear - % electricity']
+    y2= merged_2019['Fossil fuels - % electricity']
+    y3= merged_2019['Renewables - % electricity']
+
+    plt.bar(x, y1, color='r')
+    plt.bar(x, y2, bottom=y1, color='b')
+    plt.bar(x, y3, bottom=y1+y2, color='g')
+    plt.xlabel('Income Group')
+    plt.ylabel('Electricity share (%)')
+    plt.legend(['Nuclear','Fossil Fuels', 'Renewable'])
+    plt.title('Percentage of Electricity Share by Income Group')
+    plt.show()
+    
+    
 
     
 
