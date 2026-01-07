@@ -8,6 +8,7 @@ from business_case import merge_datasets
 from business_case import rename_coloumns
 from business_case import optimise_k_means
 import pandas as pd
+import plotly as px
 from unittest.mock import patch
 
 

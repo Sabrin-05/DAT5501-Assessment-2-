@@ -240,8 +240,6 @@ def main():
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-
-
     merged_df = merge_datasets(co2_data, electricity_data, year='2022')    
     print(merged_df)
     
@@ -357,10 +355,34 @@ def main():
     )
 
 
-    plt.xlabel('Fossile Fuel Share (%)')
-    plt.ylabel('CO2 Emissions Per Capita (tonnes)')
-    plt.title('CO₂ per capita vs Fossil Fuel Share')
-    plt.show()
+    '''
+    # Define x and y
+    x = merged_2019['Fossil fuels - % electricity']
+    y = merged_2019['Annual CO₂ emissions (per capita)']
+
+    # Remove any zero or negative y-values (log cannot handle them)
+    mask = y > 0
+    x = x[mask]
+    y = y[mask]
+
+    # Fit exponential model: log(y) = m*x + c
+    log_y = np.log(y)
+    m, c = np.polyfit(x, log_y, 1)
+
+    # Convert back to exponential form
+    y_pred = np.exp(m * x + c)
+
+    # Plot exponential curve
+    x_sorted = np.sort(x)
+    plt.plot(x_sorted, np.exp(m * x_sorted + c),
+            color='black', linewidth=2, label='Exponential trend')
+    
+    plt.text(
+    min(x)+5,
+    max(y)*0.9,
+    f"y = exp({m:.3f}x + {c:.3f})",
+    fontsize=10
+    )'''
 
     # print out the outlier countries
     for _, row in outliers.iterrows():
@@ -371,6 +393,16 @@ def main():
             fontsize=9
         )
 
+    plt.xlabel('Fossile Fuel Share (%)')
+    plt.ylabel('CO2 Emissions Per Capita (tonnes)')
+    plt.title('CO₂ per capita vs Fossil Fuel Share')
+    plt.legend()
+    plt.savefig("my_scatter_plot.png", dpi=300, bbox_inches='tight')
+    plt.show()
+
+
+
+    
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # Figure 4: Chloropleth Map showing CO2 emissions in 2022
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
