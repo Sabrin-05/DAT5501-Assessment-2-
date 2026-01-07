@@ -53,6 +53,7 @@ class TestCleanCO2Data(unittest.TestCase):
         self.assertNotIn('Code', cleansed.columns) 
         self.assertTrue((cleansed['Year'] >= 2000).all())
 
+
     def test_rename_columns(self):
         '''
         Function: Checks where the rename columns function in main code is working correctly
@@ -82,9 +83,60 @@ class TestCleanCO2Data(unittest.TestCase):
         self.assertNotIn('Renewables - % electricity', renamed.columns)
         self.assertNotIn('Nuclear - % electricity', renamed.columns)
         self.assertNotIn('Annual CO₂ emissions (per capita)', renamed.columns)
-    
 
     
+    def test_merge_datasets(self):
+        '''
+        Function: Checks wheather the co2 emissions dataset and the electricty dataset are
+        merging correctly 
+        '''
+
+        # create an example dataframe to mimic the original co2 dataset
+        test_co2_df = pd.DataFrame({
+        'Entity': ['Australia'],
+        'Year': [2022],
+        'Annual CO₂ emissions (per capita)': [0.007]
+        })
+
+
+        # create an example dataframe to mimic the original electricity share dataset
+        test_elec_df = pd.DataFrame({
+        'Entity': ['Australia'],
+        'Year': [2022],
+        'Fossil fuels - % electricity': [0.000987],
+        'Renewables - % electricity': [0.456787654],
+        'Nuclear - % electricity': [0.0020123]
+        })
+
+
+        merged = merge_datasets(test_co2_df, test_elec_df)
+
+        # ~~~~~~ Assertions ~~~~~~
+    
+        '''self.assertEqual(len(merged), 1)
+
+        # check for the expected columns in merged dataframe
+        expected_columns = [
+            'Entity', 'Year',
+            'Annual CO₂ emissions (per capita)',
+            'Fossil fuels - % electricity',
+            'Renewables - % electricity',
+            'Nuclear - % electricity'
+        ]
+        for col in expected_columns:
+            self.assertIn(col, merged.columns)
+    
+        # check rows have merged correctly based on entity 'Australia'
+        australia_row = merged[merged['Entity'] == 'Australia'].iloc[0]
+        self.assertAlmostEqual(australia_row['Annual CO₂ emissions (per capita)'], 0.9)
+        self.assertAlmostEqual(australia_row['Fossil fuels - % electricity'], 0.000987)
+
+        # check rows have merged correctly based on entity 'Puerto Rico'
+        puerto_rico_row = merged[merged['Entity'] == 'Puerto Rico'].iloc[0]
+        self.assertAlmostEqual(puerto_rico_row['Annual CO₂ emissions (per capita)'], 0.007)
+        self.assertAlmostEqual(puerto_rico_row['Fossil fuels - % electricity'], 0.7654567)'''
+
+
 if __name__ == "__main__":
     unittest.main()
 
