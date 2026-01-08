@@ -368,7 +368,7 @@ def main():
 
 
     
-    '''#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # Figure 4: Chloropleth Map showing CO2 emissions in 2022
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -391,7 +391,14 @@ def main():
         title="CO₂ Emissions Per Capita (2022)"
     )
 
-    fig.show()'''
+    fig.write_image(
+        'heat_map_co2_emission_2022.png',
+        width = 1000,
+        height = 600,
+        scale = 2
+    )
+    
+    fig.show()
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # Figure 5: Stacked bar chart showing: Electricity Share composition by Income 
