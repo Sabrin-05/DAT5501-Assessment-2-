@@ -69,14 +69,14 @@ def merge_datasets(co2_data, electricity_data):
     '''
 
 
-    # filtered co2 emissions data
+    # filtered co2 emissions data on year 2022
     filtered_co2 = co2_data[co2_data['Year']== 2022]
 
-    # filtered energy mix data
+    # filtered energy mix data on year 2022
     filtered_elec = electricity_data[electricity_data['Year'] == 2022]
 
     # merge two datasets
-    merged = filtered_co2.merge(filtered_elec, on="Enitity", how="inner")
+    merged = filtered_co2.merge(filtered_elec, on=["Entity","Year"], how="inner")
 
     return merged
 
@@ -209,8 +209,8 @@ def main():
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-    '''merged_df = merge_datasets(co2_data, electricity_data)    
-    print(merged_df)'''
+    merged_df = merge_datasets(co2_data, electricity_data)    
+    print(merged_df)
     
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # Manually merging datasets togther as function doesnt work
