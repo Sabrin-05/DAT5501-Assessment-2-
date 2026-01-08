@@ -362,7 +362,7 @@ def main():
     plt.legend(title='Income Group')
     plt.grid(True, alpha=0.3)
     plt.tight_layout()
-    plt.savefig("KeyFigure1.png", dpi=300, bbox_inches='tight')
+    plt.savefig("co2_emissions_vs_fossil_fuel_2019.png", dpi=300, bbox_inches='tight')
     plt.show()
 
 
@@ -393,25 +393,65 @@ def main():
 
     fig.show()'''
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    # Figure 5: Electricity Share composition by Income
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # Figure 5: Stacked bar chart showing: Electricity Share composition by Income 
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    x = merged_2019['Low income countries','Lower-middle-income countries',
-         'Upper-middle-income countries','High income countries']
-    y1= merged_2019['Nuclear - % electricity']
-    y2= merged_2019['Fossil fuels - % electricity']
-    y3= merged_2019['Renewables - % electricity']
-
-    plt.bar(x, y1, color='r')
-    plt.bar(x, y2, bottom=y1, color='b')
-    plt.bar(x, y3, bottom=y1+y2, color='g')
-    plt.xlabel('Income Group')
-    plt.ylabel('Electricity share (%)')
-    plt.legend(['Nuclear','Fossil Fuels', 'Renewable'])
-    plt.title('Percentage of Electricity Share by Income Group')
-    plt.show()
+    income_entities = ['Low-income countries',
+                       'Lower-middle-income countries',
+                        'Upper-middle-income countries',
+                        'High-income countries']
     
+    
+    energy_2019 = electricity_data[
+        (electricity_data['Year'] == 2019) &
+        (electricity_data['Entity'].isin(income_entities))
+        ]
+    
+    energy_type = ['Nuclear - % electricity',
+                   'Fossil fuels - % electricity',
+                     'Renewables - % electricity']
+    
+    energy_2019 = energy_2019[['Entity'] + energy_type]
+
+    # rename x- axis variables
+    income_map = {
+        'Low-income countries': 'Low-income',
+        'Lower-middle-income countries': 'Lower-middle-income',
+        'Upper-middle-income countries': 'Upper-middle-income',
+        'High-income countries': 'High-income'
+    }
+
+    # settting entity as index
+    energy_2019 = energy_2019.set_index('Entity')
+
+
+    # create stacked bar chart
+    ax = energy_2019.plot(
+        kind = 'bar',
+        stacked = True,
+        figsize= (10,6)
+    )
+
+    ax.set_title('Energy Source Composition by Income (2019)')
+    ax.set_xlabel('Income Group')
+    ax.set_xticklabels(
+        [income_map.get(label.get_text(), label.get_text())
+         for label in ax.get_xticklabels()],
+         rotation=0
+    )
+    ax.set_ylabel('Electricity Generation')
+    ax.legend(
+        title = 'Energy Source',
+        bbox_to_anchor= (1.05,1),
+        loc = 'upper left'
+    )
+
+    plt.xticks(rotation=0)
+    plt.tight_layout()
+    plt.savefig("energy_source_by_income_2019.png", dpi=300, bbox_inches='tight')
+    plt.show()
+
     
 
     
