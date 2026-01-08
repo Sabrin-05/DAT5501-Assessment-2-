@@ -184,23 +184,51 @@ def main():
     # top 10 co2 emitting countries
     highest_emitters = co2_data.groupby('Entity')[
             'Annual CO₂ emissions (per capita)'].max().nlargest(10).index
-    print("Highest Emitters:", highest_emitters) # print highest emitting entities
+    print("Highest Emitters:", highest_emitters) 
+    
+    # print highest emitting entities
     co2_highest_emitters = co2_data[co2_data['Entity'].isin(highest_emitters)]
+
+    # highlight Qatar, Aruba, Curacao
+    bold_countries = {
+        'Curacao': {'color': 'red', 'linewidth':3, 'linestyle':'--'},
+        'Aruba': {'color': 'blue', 'linewidth':3, 'linestyle':'-.'},
+        'Qatar': {'color': 'magenta', 'linewidth':3, 'linestyle':':'}
+    }
 
 
     # Loop through top 10 co2 emitting countries and plot their data
     for country in co2_highest_emitters['Entity'].unique():
         subset = co2_highest_emitters[co2_highest_emitters['Entity'] == country]
 
-        # plot a separate line for each country
-        plt.plot(
+        if country in bold_countries:
+            style = bold_countries[country]
+            plt.plot(
             subset['Year'],
             subset['Annual CO₂ emissions (per capita)'],
-            label=country
+            label=country,
+            color = style['color'],
+            linewidth = style['linewidth'],
+            linestyle = style['linestyle']
         )
+        else:
+            # plot a separate line for each country
+            plt.plot(
+                subset['Year'],
+                subset['Annual CO₂ emissions (per capita)'],
+                label=country,
+                linewidth = 1,
+                alpha = 0.6
+            )
 
+    plt.title('CO₂ Emissions per capita for top 10 emitting countries (2000-2023)')
+    plt.xlabel('Year')
+    plt.ylabel('CO₂ emissions (tonnes per capita)')
+    plt.grid(True, alpha=0.3)
     plt.legend()
-    plt.savefig("SupplementaryFig2.png", dpi=300, bbox_inches='tight')
+    plt.savefig("top_10_emitting_countries(2000-2022).png",
+                 dpi=300,
+                 bbox_inches='tight')
     plt.show()
 
 
@@ -397,7 +425,7 @@ def main():
         height = 600,
         scale = 2
     )
-    
+
     fig.show()
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
